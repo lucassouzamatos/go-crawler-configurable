@@ -6,7 +6,7 @@
 	},
 	"customHandler": {	    
 		"description": {
-			"defaultExecutablePath": "Handlers.exe"
+			"defaultExecutablePath": "api.exe"
 		},
 		"enableForwardingHttpRequest":true
 	}
