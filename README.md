@@ -6,3 +6,12 @@
   <img src="./structure.png" />
 </p>
 <br />
+
+## Iniciando
+Para iniciar o projeto basta executar:
+
+```bash
+go build /api
+
+func start --custom
+```
