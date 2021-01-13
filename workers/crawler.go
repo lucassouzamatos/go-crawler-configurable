@@ -1,4 +1,4 @@
-package main
+package workers
 
 import (
 	"fmt"
@@ -8,19 +8,27 @@ import (
 	"golang.org/x/net/html"
 )
 
+type CrawlerWorker struct {
+}
+
+// NewCrawlerWorker should creates a new worker
+func NewCrawlerWorker() *CrawlerWorker {
+	return &CrawlerWorker{}
+}
+
 // MapElements should walks all children elements recursively
-func MapElements(s *goquery.Selection) {
+func (crawlerWorker *CrawlerWorker) MapElements(s *goquery.Selection) {
 	// class, exists := s.Attr("class")
 
 	if s.Children() != nil {
 		s.Children().Each(func(_ int, c *goquery.Selection) {
-			MapElements(c)
+			crawlerWorker.MapElements(c)
 		})
 	}
 }
 
 // ParseHTML should returns a HTML node from uri
-func ParseHTML(url string) {
+func (crawlerWorker *CrawlerWorker) ParseHTML(url string) {
 	resp, reqErr := http.Get(url)
 	if reqErr != nil {
 		fmt.Println(reqErr)
@@ -31,10 +39,6 @@ func ParseHTML(url string) {
 
 	doc := goquery.NewDocumentFromNode(root)
 	doc.Each(func(_ int, s *goquery.Selection) {
-		MapElements(s)
+		crawlerWorker.MapElements(s)
 	})
-}
-
-func main() {
-	ParseHTML("https://pt.wikipedia.org/wiki/Wikip%C3%A9dia:P%C3%A1gina_principal")
 }
