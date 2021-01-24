@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
+	uuid "github.com/nu7hatch/gouuid"
 	"golang.org/x/net/html"
 )
 
@@ -14,21 +15,24 @@ type CrawlerWorker struct {
 }
 
 // Notify should receive the messages
-func (c *CrawlerWorker) Notify(message string) {
+func (c *CrawlerWorker) Notify(message WrapperMessage) {
 	if c == nil {
 		return
 	}
-	if message == "startup" {
-		c.parseHTML("https://google.com")
+	if message.text == "startup" && message.configuration != nil {
+		fmt.Println("CrawlerWorker get configuration url:", message.configuration.URL)
+		c.parseHTML(message.configuration.URL)
 	}
-	fmt.Println("CrawlerWorker get message:", message)
+
+	fmt.Println("CrawlerWorker get message:", message.text)
 }
 
 // Send should send the messages
-func (c *CrawlerWorker) Send(message string) {
+func (c *CrawlerWorker) Send(message WrapperMessage) {
 	if c == nil {
 		return
 	}
+	// 	c.parseHTML(url)
 	c.mediator.Send(message, c)
 }
 
@@ -38,9 +42,15 @@ func NewCrawlerWorker(mediator IMediator) *CrawlerWorker {
 }
 
 func (c *CrawlerWorker) mapElements(s *goquery.Selection) {
-	className, exists := s.Attr("class")
+	_, exists := s.Attr("class")
 	if exists {
-		c.Send(className)
+		var u, err = uuid.NewV4()
+		if err == nil {
+			ws := WrapperSelection{selection: s, identifier: u}
+			e := WrapperMessage{text: "mapped-element", querySelection: &ws}
+
+			c.Send(e)
+		}
 	}
 
 	if s.Children() != nil {

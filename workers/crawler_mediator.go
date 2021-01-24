@@ -21,7 +21,7 @@ func (m *CrawlerMediator) AddWorker(w IWorker) {
 }
 
 // Send should notify all the workers
-func (m *CrawlerMediator) Send(message string, c IWorker) {
+func (m *CrawlerMediator) Send(message WrapperMessage, c IWorker) {
 	if m == nil {
 		return
 	}
@@ -34,7 +34,7 @@ func (m *CrawlerMediator) Send(message string, c IWorker) {
 }
 
 // SendAll should notify all the workers from the mediator
-func (m *CrawlerMediator) SendAll(message string) {
+func (m *CrawlerMediator) SendAll(message WrapperMessage) {
 	if m == nil {
 		return
 	}
@@ -47,6 +47,7 @@ func (m *CrawlerMediator) SendAll(message string) {
 func NewCrawler() *CrawlerMediator {
 	c := &CrawlerMediator{}
 	c.AddWorker(NewCrawlerWorker(c))
+	c.AddWorker(NewCloudVisionWorker(c))
 	return c
 }
 
@@ -64,6 +65,7 @@ func (m *CrawlerMediator) Start() {
 	}
 
 	for _, handle := range configuration.Handlers {
-		println(handle.URL)
+		c := NewCrawler()
+		c.SendAll(WrapperMessage{text: "startup", configuration: &handle})
 	}
 }

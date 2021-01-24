@@ -2,13 +2,13 @@ package workers
 
 // IMediator is a interface for god
 type IMediator interface {
-	Send(string, IWorker)
+	Send(WrapperMessage, IWorker)
 }
 
 // IWorker is a interface for workers
 type IWorker interface {
-	Send(string)
-	Notify(string)
+	Send(WrapperMessage)
+	Notify(WrapperMessage)
 }
 
 // Mediator is a constructor
